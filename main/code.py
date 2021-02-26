@@ -13,8 +13,8 @@ except ImportError:
       pass
 
 # Configuration
-projects_folder = 'ascii/'
-
+projects_folder = 'main/ascii'
+projects_folder_alt = str(getcwd())+'\\main\\ascii\\'
 # Functions
 def change_editor():
    print('Supported Editors: '+'Notepad, Wordpad, Visual Studio (Code), Notepad++')
@@ -30,12 +30,14 @@ def command_handler(i='',caller='main'):
             clear()
             exit()
          else: clear()
-         if i in ['exe']:
-            change_editor()
-         elif i in cmds.files:
-            for file_name in listdir('ascii'):
+         if i in cmds.start:
+            open_file()
+         if i in cmds.files:
+            for file_name in listdir(projects_folder):
                print(file_name[:-4])
             print('')
+         # elif i in ['exe']:
+         #    change_editor()
          elif i in cmds.cmd_list:
             print('credits | Creator\'s social media')
             print('dir | Gives you a list of files')
@@ -70,10 +72,10 @@ def command_handler(i='',caller='main'):
 
 def clear():
    _ = system(config.clear_command)
-   print('Type "?" for a list of commands')
+   print('Type "help" for a list of commands')
 
 def main():
-   # clear()
+   clear()
    while True:
       i = input('> ')
       if i != '' or ' ':
@@ -82,31 +84,60 @@ def main():
 
 def new_project():
    naming = True
-   while naming:
-      print('Leave project name empty to cancel')
-      project_name = input('Project Name: ')
-      if project_name == '':
-         main()
-      temp_project_name = str(project_name).lower()+'.txt'
-      for file_name in listdir('ascii'):
-         if str(file_name).lower() == temp_project_name:
-            print('That project name already exists, please try again')
+   while True:
+      while naming:
+         clear()
+         print('Leave project name empty to cancel')
+         project_name = input('Project Name: ')
+         if project_name == '':
+            main()
+         temp_project_name = str(project_name).lower()+'.txt'
+         for file_name in listdir('main/ascii'):
+            if str(file_name).lower() == temp_project_name:
+               print('That project name already exists, please try again')
+               continue
+         for invalid_name in config.invalid_names:
+            if str(file_name).upper() == invalid_name:
+               print('That project name cannot be used on this operating system, please try again')
+               continue
+         if project_name in config.invalid_chars:
+            print('That project name includes an invalid character, please try again')
             continue
-      for invalid_name in config.invalid_names:
-         if str(file_name).upper() == invalid_name:
-            print('That name cannot be used on this operating system, please try again')
-            continue
-      if project_name in config.invalid_chars:
-         print('That name most likely includes an invalid character , please try again')
+         naming = False
+      try: open((str(projects_folder) + '/' + str(project_name) + '.txt'),'x')
+      except FileExistsError: 
+         naming = True
          continue
-      naming = False
-   open(('ascii/'+str(project_name)+'.txt'),'x')
-   sleep(1)
-   log(0,(str(getcwd())+'\\ascii\\'+str(project_name)+'.txt'))
-   run([config.editor,(str(getcwd())+'\\ascii\\'+str(project_name)+'.txt')])
+      sleep(1)
+      log(0,(str(getcwd())+'\\ascii\\'+str(project_name)+'.txt'))
+      run([config.editor,(projects_folder_alt+str(project_name)+'.txt')])
+      main()
+
+def open_file():
+   print('This command is currently not working, sorry for the inconvenience')
+   pass
+   # n = 0
+   # for file_name in listdir(projects_folder):
+   #    n += 1      
+   #    print(str(n) + ': ' + file_name[:-4])
+   # while True:
+   #    i = input('> ')
+   #    if i == '':
+   #       continue
+   #    if type(i) is int:
+   #       n = 0
+   #       for file in listdir(projects_folder):
+   #          n += 1
+   #          if i == n:
+   #             pass
+   #    for file_name in listdir(projects_folder):
+   #       if i.lower == file_name.lower:
+   #          run([config.editor,(projects_folder_alt+str(i)+'.txt')])
+   #          break
+      # print('That was not detected as a valid file')
 
 def file_read(file):
-   try: testFile = open("ascii/"+str(file)+".txt")
+   try: testFile = open(str(projects_folder) + '/' + str(file) + '.txt')
    except FileNotFoundError: 
       print('That was not recognised as a valid command!')
       return
@@ -121,15 +152,16 @@ def file_read(file):
    return
 
 class cmds:
-   cmd_list = ['?','help','info','cmd','cmds','command','commands']
-   files = ['!','dir','directory','files','projects']
-   stop = ['stop','exit','quit','leave']
-   create = ['create','new']
+   cmd_list = ['?','help','info','cmd','cmds','command','commands'] # Lists commands
+   start = ['start','open','execute'] # Opens in editor
+   files = ['!','dir','directory','files','projects'] # Lists the project directory
+   stop = ['stop','exit','quit','leave'] # Quits the application
+   create = ['create','new'] # Create a new file
 
 
 class xml_config:
    from xml.etree.ElementTree import ElementTree as xml
-   tree = xml.parse(xml,'./settings.xml')
+   tree = xml.parse(xml,'./main/settings.xml')
    data = tree.find('settings')
    editor = data.get('editor')+'.exe'
    fancy_print = bool(data.get('fancy_print'))
@@ -155,5 +187,5 @@ def wait():
 
 #-
 p = lambda t: print(t,end='',)
-system('title '+'ASCII Printer - Made by 5H0')
+system('title '+'ASCII Project Manager')
 main()
