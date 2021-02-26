@@ -3,6 +3,8 @@ dir | Gives you a list of files
 print | Prints contents of file
 new | Create and open new file in editor
 exit | Closes the window
+main | Goes to the main menu
+config | Toggle settings
 
 DISABLED
 open | Open file in editor

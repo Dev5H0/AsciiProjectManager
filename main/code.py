@@ -38,6 +38,7 @@ def command_handler(i='',caller='main'):
          if i in cmds.files:
             for file_name in listdir(projects_folder):
                print(file_name[:-4])
+               wait()
             main('')
          # elif i in ['exe']:
          #    change_editor()
@@ -51,6 +52,8 @@ def command_handler(i='',caller='main'):
             main('')
          elif i[:5] == 'print':
             file_read(i[6:])
+         elif i in cmds.menu:
+            main()
          elif i in cmds.settings:
             configuration()
          else: file_read(i)
@@ -144,7 +147,7 @@ def file_read(file):
    try: file = open(str(projects_folder) + '/' + str(file) + '.txt')
    except FileNotFoundError: 
       print('That was not recognised as a valid command!')
-      return
+      main('')
    lines = file.readlines()
    print('')
    for line in lines:
@@ -155,24 +158,35 @@ def file_read(file):
    print('')
    main('')
 
-def configuration():
+def configuration(caller=None):
+   wait()
    print('1. Toggle Fancy Printing - ' + config.fprint_status)
+   wait()
    print('2. Change Editor (WiP)')
-   i = input('> ')
-   if i in cmds.menu:
-      main()
-   if i in ['fprint','fancy print','1',1]:
-      print(xml_config.fancy_print)
-      if xml_config.fancy_print == False:
-         xml_config.fancy_print = True
-         config.fprint_status = 'Enabled'
-      else:
-         xml_config.fancy_print = False
-         config.fprint_status = 'Disabled'
-      print(xml_config.fancy_print)
-      xml_config.data.set('fancy_print',str(xml_config.fancy_print))
-      xml_config.tree.write(xml_config.data_file)
-      configuration()
+   wait()
+   if caller == 'config':
+      main('')
+   else:
+      print('')
+   while True:
+      i = input('> ')
+      if i in ['fprint','fancy print','1',1]:
+         if xml_config.fancy_print == False:
+            xml_config.fancy_print = True
+            config.fprint_status = 'Enabled'
+            config.fprint = .07
+         else:
+            xml_config.fancy_print = False
+            config.fprint_status = 'Disabled'
+            config.fprint = 0
+         xml_config.data.set('fancy_print',str(xml_config.fancy_print))
+         xml_config.tree.write(xml_config.data_file)
+         clear()
+         configuration('config')
+      elif i in cmds.menu:
+         main()
+      else: 
+         continue
 
 class cmds:
    cmd_list = ['?','help','info','cmd','cmds','command','commands'] # Lists commands
@@ -206,7 +220,7 @@ class config:
 
    if xml_config.fancy_print == True:
       fprint_status = 'Enabled'
-      fprint = .08
+      fprint = .07
    else: 
       fprint_status = 'Disabled'
       fprint = 0
