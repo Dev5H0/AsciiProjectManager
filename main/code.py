@@ -38,36 +38,38 @@ def command_handler(i='',caller='main'):
          if i in cmds.files:
             for file_name in listdir(projects_folder):
                print(file_name[:-4])
-            main(c=...)
+            main('')
          # elif i in ['exe']:
          #    change_editor()
          elif i in cmds.cmd_list:
-            print('credits | Creator\'s social media')
-            print('dir | Gives you a list of files')
-            print('print | Prints contents of file')
-            print('new | Create and open new file in editor')
-            print('exit | Closes the window')
-            print('')
-            print('DISABLED')
-            print('open | Open file in editor')
+            read_text('help')
             main('')
          elif i in cmds.create:
             new_project()
          elif i == 'credits':
-            for line in open('main/dev/texts/credits.txt','r'):
-               p(line)
-               wait()
+            read_text('credits')
             main('')
          elif i[:5] == 'print':
             file_read(i[6:])
          elif i in cmds.settings:
             configuration()
-         else: 
-            print('That was not detected as a valid command, please try again')
+         else: file_read(i)
       elif caller == 'change_editor':
          pass
       else: log(2,('Caller "' + str(caller) + '" was not found. Please contact "5H0#5782" on Discord or create a report on Github.'))
       main()
+
+def read_text(file=None):
+   if file == None:
+      return
+   else: 
+      try:
+         for line in open('main/dev/texts/'+file+'.txt'):
+            p(line)
+            wait()
+         main('')
+      except FileNotFoundError:
+         main()
 
 def wait_input():
    i = input('Press enter to go back to the main menu.')
@@ -125,6 +127,7 @@ def new_project():
 
 def open_file():
    print('This command is currently not working, sorry for the inconvenience')
+   main('')
    for file_name in listdir(projects_folder):
       print(file_name[:-4])
    while True:
@@ -138,11 +141,11 @@ def open_file():
       print('That was not detected as a valid file')
 
 def file_read(file):
-   try: testFile = open(str(projects_folder) + '/' + str(file) + '.txt')
+   try: file = open(str(projects_folder) + '/' + str(file) + '.txt')
    except FileNotFoundError: 
       print('That was not recognised as a valid command!')
       return
-   lines = testFile.readlines()
+   lines = file.readlines()
    print('')
    for line in lines:
       p(line)
@@ -150,10 +153,7 @@ def file_read(file):
    print('')
    print('')
    print('')
-   print('Press enter to go back to the main menu')
-   i = input('> ')
-   if i == i:
-      main()
+   main('')
 
 def configuration():
    print('1. Toggle Fancy Printing - ' + config.fprint_status)
@@ -206,7 +206,7 @@ class config:
 
    if xml_config.fancy_print == True:
       fprint_status = 'Enabled'
-      fprint = .05
+      fprint = .08
    else: 
       fprint_status = 'Disabled'
       fprint = 0
