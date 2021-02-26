@@ -1,0 +1,8 @@
+credits | Creator's social media
+dir | Gives you a list of files
+print | Prints contents of file
+new | Create and open new file in editor
+exit | Closes the window
+
+DISABLED
+open | Open file in editor

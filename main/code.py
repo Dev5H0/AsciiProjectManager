@@ -7,9 +7,12 @@ from sys import exit
 from time import sleep
 
 # File Imports
-try: from dev.logging import log
+try: 
+   from dev.logging import log
 except ImportError: 
-   def log(a,b=None):
+   from main.dev.logging import log
+except: 
+   def log(a=None,b=None,c=None):
       pass
 
 # Configuration
@@ -35,7 +38,7 @@ def command_handler(i='',caller='main'):
          if i in cmds.files:
             for file_name in listdir(projects_folder):
                print(file_name[:-4])
-            print('')
+            main(c=...)
          # elif i in ['exe']:
          #    change_editor()
          elif i in cmds.cmd_list:
@@ -44,25 +47,21 @@ def command_handler(i='',caller='main'):
             print('print | Prints contents of file')
             print('new | Create and open new file in editor')
             print('exit | Closes the window')
-
             print('')
             print('DISABLED')
             print('open | Open file in editor')
-            print('')
-            return
+            main('')
          elif i in cmds.create:
             new_project()
          elif i == 'credits':
-            print('')
-            print('Discord: 5H0#5782')
-            print('Github: Dev5H0')
-            print('Reddit: BoredCatGod')
-            print('')
-            return
-         elif i == open:
-            pass
+            for line in open('main/dev/texts/credits.txt','r'):
+               p(line)
+               wait()
+            main('')
          elif i[:5] == 'print':
             file_read(i[6:])
+         elif i in cmds.settings:
+            configuration()
          else: 
             print('That was not detected as a valid command, please try again')
       elif caller == 'change_editor':
@@ -70,12 +69,23 @@ def command_handler(i='',caller='main'):
       else: log(2,('Caller "' + str(caller) + '" was not found. Please contact "5H0#5782" on Discord or create a report on Github.'))
       main()
 
+def wait_input():
+   i = input('Press enter to go back to the main menu.')
+   if i == i: 
+      main()
+
 def clear():
    _ = system(config.clear_command)
+   print('----------------------------------')
    print('Type "help" for a list of commands')
+   print('----------------------------------')
+   print('')
 
-def main():
-   clear()
+def main(c=None):
+   if c == None:
+      clear()
+   else:
+      print('')
    while True:
       i = input('> ')
       if i != '' or ' ':
@@ -115,26 +125,17 @@ def new_project():
 
 def open_file():
    print('This command is currently not working, sorry for the inconvenience')
-   pass
-   # n = 0
-   # for file_name in listdir(projects_folder):
-   #    n += 1      
-   #    print(str(n) + ': ' + file_name[:-4])
-   # while True:
-   #    i = input('> ')
-   #    if i == '':
-   #       continue
-   #    if type(i) is int:
-   #       n = 0
-   #       for file in listdir(projects_folder):
-   #          n += 1
-   #          if i == n:
-   #             pass
-   #    for file_name in listdir(projects_folder):
-   #       if i.lower == file_name.lower:
-   #          run([config.editor,(projects_folder_alt+str(i)+'.txt')])
-   #          break
-      # print('That was not detected as a valid file')
+   for file_name in listdir(projects_folder):
+      print(file_name[:-4])
+   while True:
+      i = input('> ')
+      if i == '':
+         continue
+      for file_name in listdir(projects_folder):
+         if i.lower == file_name.lower:
+            run([config.editor,(projects_folder_alt+str(i)+'.txt')])
+            break
+      print('That was not detected as a valid file')
 
 def file_read(file):
    try: testFile = open(str(projects_folder) + '/' + str(file) + '.txt')
@@ -149,19 +150,44 @@ def file_read(file):
    print('')
    print('')
    print('')
-   return
+   print('Press enter to go back to the main menu')
+   i = input('> ')
+   if i == i:
+      main()
+
+def configuration():
+   print('1. Toggle Fancy Printing - ' + config.fprint_status)
+   print('2. Change Editor (WiP)')
+   i = input('> ')
+   if i in cmds.menu:
+      main()
+   if i in ['fprint','fancy print','1',1]:
+      print(xml_config.fancy_print)
+      if xml_config.fancy_print == False:
+         xml_config.fancy_print = True
+         config.fprint_status = 'Enabled'
+      else:
+         xml_config.fancy_print = False
+         config.fprint_status = 'Disabled'
+      print(xml_config.fancy_print)
+      xml_config.data.set('fancy_print',str(xml_config.fancy_print))
+      xml_config.tree.write(xml_config.data_file)
+      configuration()
 
 class cmds:
    cmd_list = ['?','help','info','cmd','cmds','command','commands'] # Lists commands
-   start = ['start','open','execute'] # Opens in editor
+   settings = ['settings','config','configuration','configurations']
+   menu = ['back','main','menu','main menu']
    files = ['!','dir','directory','files','projects'] # Lists the project directory
-   stop = ['stop','exit','quit','leave'] # Quits the application
    create = ['create','new'] # Create a new file
+   start = ['start','open','execute'] # Opens in editor
+   stop = ['stop','exit','quit','leave'] # Quits the application
 
 
 class xml_config:
-   from xml.etree.ElementTree import ElementTree as xml
-   tree = xml.parse(xml,'./main/settings.xml')
+   import xml.etree.ElementTree as xml
+   data_file = './main/settings.xml'
+   tree = xml.parse(data_file)
    data = tree.find('settings')
    editor = data.get('editor')+'.exe'
    fancy_print = bool(data.get('fancy_print'))
@@ -179,13 +205,17 @@ class config:
    editor = xml_config.editor
 
    if xml_config.fancy_print == True:
-      fprint = '.02'
+      fprint_status = 'Enabled'
+      fprint = .05
    else: 
-      fprint = '0'
+      fprint_status = 'Disabled'
+      fprint = 0
+
 def wait():
    sleep(config.fprint)
 
 #-
 p = lambda t: print(t,end='',)
 system('title '+'ASCII Project Manager')
+clear()
 main()
