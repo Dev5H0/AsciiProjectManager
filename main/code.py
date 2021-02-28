@@ -3,7 +3,7 @@ import sys
 from time import sleep as wait
 from os import listdir, name, system, getcwd
 from subprocess import run
-from sys import exit
+from sys import exit, version
 from time import sleep
 
 # File Imports
@@ -16,8 +16,10 @@ except:
       pass
 
 # Configuration
+app_version = "v1.0.0"
 projects_folder = 'main/ascii'
 projects_folder_alt = str(getcwd())+'\\main\\ascii\\'
+
 # Functions
 def change_editor():
    print('Supported Editors: '+'Notepad, Wordpad, Visual Studio (Code), Notepad++')
@@ -230,6 +232,6 @@ def wait():
 
 #-
 p = lambda t: print(t,end='',)
-system('title '+'ASCII Project Manager')
+system('title '+('ASCII Project Manager' + ' - ' + str(app_version)))
 clear()
 main()
