@@ -1,29 +1,84 @@
-from main.code import main, clear
-from main.config import p, config, cmds, app_version, projects_folder
-from main.sub_commands import wait, change_editor
-from main.dev.logging import log, logging
+# Imports
+from import_manager import os_listdir, os_getcwd, sp_Popen, time_sleep, os_system
+from config import cmds, social, config, p, projects_folder, supported_editors
+try: 
+   from dev.logging import log, logging
+except: 
+   logging = False
+   def log(x=None, y=None):
+      pass
 
-from time import sleep as time_sleep
-from subprocess import Popen as sp_Popen
-from os import listdir as os_listdir, getcwd as os_getcwd
+# Commands
+def main(c=None):
+   if c == None:
+      clear()
+   else:
+      print('')
+   while True:
+      i = input('> ')
+      if i != '' or ' ':
+         i = i.lower()
+         command_handler(i,'main')
+      else: 
+         clear()
+
+def command_handler(i='',caller='main'):
+   while True:
+      if i == '':
+         main()
+      elif caller == 'main':
+         if i in cmds.stop:
+            clear('')
+            exit()
+         else: 
+            clear()
+         for x in cmds.start:
+            if i == x:
+               open_file()
+            elif i in cmds.start[:5] or i in cmds.start[:4]:
+               if i in cmds.start[:5]:
+                  open_file(i[5:])
+               else:
+                  open_file(i[4:])
+         if i in cmds.files:
+            for file_name in os_listdir(projects_folder):
+               print(file_name[:-4])
+               wait()
+            main('')
+         # elif i in ['exe']:
+         #    change_editor()
+         elif i in cmds.cmd_list:
+            read_text('help')
+            main('')
+         elif i in cmds.create:
+            new_project()
+         elif i == 'credits':
+            read_text('credits')
+            main('')
+         elif i[:5] == 'print':
+            file_read(i[6:])
+         elif i in cmds.menu:
+            main()
+         elif i in cmds.settings:
+            configuration()
+         elif i == 'discord':
+            print('Discord Server: ' + social.discord)
+            main('')
+         else: 
+            file_read(i)
+      else: 
+         log(2,('Caller "' + str(caller) + '" was not found. Please join our Discord for support.'))
+      main()
+
 def configuration():
    wait()
    print('1. Toggle Fancy Printing - ' + config.fprint_status)
    wait()
-   print('2. Change Editor (WiP)')
+   print('2. Change Editor (WIP)')
    wait()
-   print('3. Logging')
    while True:
       print('\n(Type "back" to go to the menu)')
       i = input('> ')
-      if i in ['3',3]:
-         if logging == False:
-            logging = True
-         elif logging == True:
-            logging = False
-         else: 
-            continue
-         return logging
       if i in ['fprint','fancy print','1',1]:
          if config.cxml.fancy_print == False:
             config.cxml.fancy_print = True
@@ -33,12 +88,15 @@ def configuration():
             config.cxml.fancy_print = False
             config.fprint_status = 'Disabled'
             config.fprint = 0
-         config.cxml.data.set('fancy_print',str(config.xml.fancy_print))
-         config.cxml.tree.write(config.xml.data_file)
+         config.cxml.data.set('fancy_print',str(config.cxml.fancy_print))
+         config.cxml.tree.write(config.cxml.data_file)
          clear()
          configuration()
       elif i in ['change editor','editor','2',2]:
-         change_editor()
+         clear()
+         print('This command is temporarily disabled.')
+         main('')
+         # change_editor()
       elif i in cmds.menu:
          main()
       else: 
@@ -129,3 +187,29 @@ def new_project():
       file = (str(os_getcwd())+'\\main\\ascii\\'+str(project_name)+'.txt')
       sp_Popen([editor, file])
       main()
+
+def change_editor():
+   print('Supported Editors: ' + 'Wordpad, Notepad, Notepad++, Visual Studio Code')
+   i = input('> ')
+   if i in supported_editors.all_editors:
+      if i in supported_editors.vsc:
+         i = ''
+      elif i in supported_editors.npp:
+         i = 'Notepad++'
+      else:
+         pass
+
+# Sub Commands
+def clear(p=None):
+   os_system(config.clear_command)
+   if p == None:
+      print('----------------------------------')
+      print('Type "help" for a list of commands')
+      print('----------------------------------')
+      print('')
+
+def wait():
+   time_sleep(config.fprint)
+
+#-
+main()

@@ -1,11 +1,14 @@
+# Imports
+from import_manager import os_getcwd
+
+# Variables
 p = lambda t: print(t,end='',)
-from os import getcwd as os_getcwd
 
 app_version = "v1.0.0"
 projects_folder = 'main/ascii'
 projects_folder_alt = str(os_getcwd())+'\\main\\ascii\\'
 
-
+# Functions
 class cmds:
    cmd_list = ['?','help','info','cmd','cmds','command','commands'] # Lists commands
    settings = ['settings','config','configuration','configurations']

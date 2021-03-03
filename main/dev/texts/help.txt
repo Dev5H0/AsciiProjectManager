@@ -1,10 +1,8 @@
 credits | Creator's social media
 dir | Gives you a list of files
 print | Prints contents of file
-new | Create and open new file in editor
-exit | Closes the window
-main | Goes to the main menu
-config | Toggle settings
-
-DISABLED
 open | Open file in editor
+new | Create and open new file in editor
+config | Change settings
+main | Goes to the main menu
+exit | Closes the window
