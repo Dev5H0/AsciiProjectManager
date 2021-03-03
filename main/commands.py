@@ -1,6 +1,11 @@
 # Imports
 from import_manager import os_listdir, os_getcwd, sp_Popen, time_sleep, os_system
 from config import cmds, social, config, p, projects_folder, supported_editors
+
+try: 
+   from dev.settings import debug_mode
+except:
+   debug_mode = False
 try: 
    from dev.logging import log, logging
 except: 
@@ -23,9 +28,15 @@ def main(c=None):
          clear()
 
 def command_handler(i='',caller='main'):
+   if debug_mode == True:
+      if i == 're':
+         command_handler('restart')
    while True:
       if i == '':
          main()
+      if i in ['restart','relaunch']:
+         os_system((os_getcwd() + '\\start.bat'))
+         exit()
       elif caller == 'main':
          if i in cmds.stop:
             clear('')
@@ -71,12 +82,12 @@ def command_handler(i='',caller='main'):
       main()
 
 def configuration():
-   wait()
-   print('1. Toggle Fancy Printing - ' + config.fprint_status)
-   wait()
-   print('2. Change Editor (WIP)')
-   wait()
    while True:
+      wait()
+      print('1. Toggle Fancy Printing - ' + config.fprint_status)
+      wait()
+      print('2. Change Editor (WIP)')
+      wait()
       print('\n(Type "back" to go to the menu)')
       i = input('> ')
       if i in ['fprint','fancy print','1',1]:
@@ -100,6 +111,7 @@ def configuration():
       elif i in cmds.menu:
          main()
       else: 
+         clear()
          continue
 
 def read_text(file=None):
