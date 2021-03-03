@@ -5,3 +5,5 @@ main/__pycache__/
 main/dev/__pycache__/
 .gitattributes
 .gitignore
+*.lnk
+.gitattributes

@@ -1,6 +1,6 @@
 # Imports
 from import_manager import os_listdir, os_getcwd, sp_Popen, time_sleep, os_system
-from config import cmds, social, config, p, projects_folder, supported_editors
+from config import cmds, social, config, p, projects_folder, supported_editors, app_version
 
 try: 
    from dev.settings import debug_mode
@@ -224,4 +224,4 @@ def wait():
    time_sleep(config.fprint)
 
 #-
-main()
+os_system('title ASCII Project Manager' + ' - ' + str(app_version))
