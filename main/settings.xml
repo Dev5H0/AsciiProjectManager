@@ -1,3 +1,4 @@
 <xml>
    <settings editor="notepad" fancy_print="True" />
+	<editor notepad="notepad" vscode="AppData\Local\Programs\Microsoft VS Code\Code" wordpad="wordpad" notepadplus="notepad++"/>
 </xml>

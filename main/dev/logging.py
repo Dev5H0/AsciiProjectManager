@@ -1,72 +1,68 @@
 # Imports
 from json import load as json_load
-from termcolor import cprint #optional - pip install termcolor
-try: from main.dev.settings import logging, debug_mode, json_code_file
-except ImportError:
-   logging = False
-   debug_mode = True
-   json_code_file = 'debug_codes.json'
 
-# Configuration
-log_type_info = ['i','info','information','1',1]
-log_type_warn = ['w','warn','warning','2',2]
-log_type_error = ['e','err','error','3',3]
-log_type_console = ['c','cmd','console','app','sys','system','0',0]
-log_type_debug = ['d','debug','-1',-1]
+try: 
+   from termcolor import cprint #optional - pip install termcolor
+except ImportError: 
+   pass
+
+try: 
+   from main.dev.settings import *
+except ImportError:
+   from dev.settings import *
+except ImportError: 
+   from settings import *
+except ImportError: 
+   from code.dev.settings import *
+except:
+   logging = False
+   debug_mode = False
 
 # Functions
-def log(log_type,log_code=None,text=None):
-   global logging
-   while logging == True:
-      if type(log_code) is str:
-         text = log_code
-         log_code = None
-      if log_code and text == None:
-         return
+def disable():
+   logging = False
+   debug_mode = False
+   return logging, debug_mode
 
-      try: code_file = open(json_code_file)
-      except FileNotFoundError: open('main/dev/debug_codes.json')
-      except FileNotFoundError: open('dev/debug_codes.json')
-      except FileNotFoundError: open('./debug_codes.json')
-      except: logging = False
-      log_file = json_load(code_file)
-      if log_type in log_type_info:
-         log_type = 'info'
-         log_title = 'INFO'
-         log_color = 'white'
-      elif log_type in log_type_warn:
-         log_type = 'warn'
-         log_title = 'WARN'
-         log_color = 'yellow'
-      elif log_type in log_type_error:
-         log_type = 'error'
-         log_title = 'ERROR'
-         log_color = 'red'
-      elif log_type in log_type_console:
-         log_type = 'console'
-         log_title = 'APP'
-         log_color = 'blue'
-      elif log_type in log_type_debug:
-         if debug_mode == True:
-            log_type = 'debug'
-            log_title = 'DEBUG'
-            log_color = 'magenta'
+def log(log_type,text=None):
+   if logging == True:
+      if text == '' or None:
+         return
       else:
-         try: cprint('-'+'\n'+'[ERROR]: Could not log. '+'\n'+'Log Type: '+str(log_type)+'\n'+'Log Code: '+str(log_code)+'\n'+'-', 'red')
-         except SyntaxError or NameError: print('[ERROR]: Could not log. '+'\n'+'Log Type: '+str(log_type)+'\n'+'Log Code: '+str(log_code))
-         except: logging = False
-      for code,value in log_file[log_type].items():
-         if text != None: 
-            try: cprint(('['+log_title+']: ')+str(text),log_color)
+         while logging == True:
+            if log_type in log_type_info:
+               log_type = 'info'
+               log_title = 'INFO'
+               log_color = 'white'
+            elif log_type in log_type_warn:
+               log_type = 'warn'
+               log_title = 'WARN'
+               log_color = 'yellow'
+            elif log_type in log_type_error:
+               log_type = 'error'
+               log_title = 'ERROR'
+               log_color = 'red'
+            elif log_type in log_type_console:
+               log_type = 'console'
+               log_title = 'APP'
+               log_color = 'blue'
+            elif log_type in log_type_debug:
+               if debug_mode == True:
+                  log_type = 'debug'
+                  log_title = 'DEBUG'
+                  log_color = 'magenta'
+            else:
+               try: 
+                  cprint('-'+'\n'+'[DEV]: Logging Error. ' + '\n' + 'Log Type: ' + str(log_type) + '\n', 'red')
+               except SyntaxError or NameError:
+                  print('[DEV]: Logging Error ' + '\n' + 'Log Type: ' + str(log_type) + '\n' + 'Text: ' + str(text))
+               except: 
+                  disable()
+            try: 
+               cprint(('['+log_title+']: ')+str(text),log_color)
             except SyntaxError or NameError:
                print('['+log_title+']: ')+str(text)
-            except: logging = False
+            except: 
+               disable()
             return
-         else: 
-            if int(log_code) == int(code):
-               try: cprint(('['+log_title+' #'+str(log_code)+']: '+value),log_color)
-               except SyntaxError or NameError: 
-                  print('['+log_title+' #'+str(log_code)+']: '+value)
-               except: logging = False
-               return
-   return
+         return
