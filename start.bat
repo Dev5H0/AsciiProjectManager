@@ -1,2 +1,2 @@
 @echo off
-.\main\code.py
+.\start\code.py
