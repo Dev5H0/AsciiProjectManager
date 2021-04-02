@@ -1,11 +1,4 @@
 # Imports
-from json import load as json_load
-
-try: 
-   from termcolor import cprint #optional - pip install termcolor
-except ImportError: 
-   pass
-
 try: 
    from settings import *
 except ImportError: 

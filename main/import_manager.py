@@ -23,6 +23,11 @@ except:
    import_error('os.system','m')
 
 try:
+   from os import name as os_name
+except:
+   import_error('os.name','m')
+
+try:
    from time import sleep as time_sleep
 except:
    import_error('time.sleep','m')
@@ -31,3 +36,10 @@ try:
    from subprocess import Popen as sp_Popen
 except:
    import_error('subprocess.Popen','m')
+
+try:
+   import xml.etree.ElementTree as xml
+except:
+   import_error('xml.etree.ElementTree','m')
+
+# os, time, subprocess, xml

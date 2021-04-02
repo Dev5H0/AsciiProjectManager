@@ -1,5 +1,5 @@
 # Imports
-from import_manager import os_getcwd
+from import_manager import os_getcwd, os_name, xml
 
 # Variables
 p = lambda t: print(t,end='',)
@@ -20,14 +20,17 @@ class cmds:
 
 
 class config:
-   from os import name as os_name
    class cxml:
-      import xml.etree.ElementTree as xml
-      data_file = './main/settings.xml'
+      try: 
+         data_file = './main/settings.xml'
+      except:
+         data_file = './settings.xml'
       tree = xml.parse(data_file)
       data = tree.find('settings')
       editor = data.get('editor')+'.exe'
       fancy_print = bool(data.get('fancy_print'))
+
+   invalid_characters = ['|','*','"',':','<','>']
 
    if os_name == 'nt':
       clear_command = 'cls'
@@ -49,11 +52,10 @@ class config:
       fprint = 0
 
 class supported_editors:
-   windows_editors = ['wordpad','notepad'],
+   win_editors = ['wordpad', 'notepad']
    npp = ['notepad++','notepad plus plus','n++','npp']
    vsc = ['vsc','vscode','vs code','visual studio code']
-   all_editors = [windows_editors, npp, vsc]
 
 class social:
-   discord = 'https://discord.gg/THE5XUF6Rc'
+   discord = 'WIP'
 

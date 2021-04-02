@@ -7,7 +7,7 @@ try:
 except:
    debug_mode = False
 try: 
-   from dev.logging import log, logging
+   from dev.logging import log
 except: 
    logging = False
    def log(x=None, y=None):
@@ -29,11 +29,16 @@ def main(c=None):
 
 def command_handler(i='',caller='main'):
    if debug_mode == True:
-      if i == 're':
+      if i == 're': # So it's easier for me to restart
          command_handler('restart')
    while True:
       if i == '':
          main()
+      for c in i:
+         if c in config.invalid_characters:
+            clear()
+            print('That command contains an invalid character.')
+            main('')
       if i in ['restart','relaunch']:
          os_system((os_getcwd() + '\\start.bat'))
          exit()
@@ -56,22 +61,28 @@ def command_handler(i='',caller='main'):
                print(file_name[:-4])
                wait()
             main('')
-         # elif i in ['exe']:
-         #    change_editor()
+         elif i in ['exe']:
+             change_editor()
          elif i in cmds.cmd_list:
             read_text('help')
             main('')
+
          elif i in cmds.create:
             new_project()
+
          elif i == 'credits':
             read_text('credits')
             main('')
+
          elif i[:5] == 'print':
             file_read(i[6:])
+
          elif i in cmds.menu:
             main()
+
          elif i in cmds.settings:
             configuration()
+
          elif i == 'discord':
             print('Discord Server: ' + social.discord)
             main('')
@@ -86,7 +97,7 @@ def configuration():
       wait()
       print('1. Toggle Fancy Printing - ' + config.fprint_status)
       wait()
-      print('2. Change Editor (WIP)')
+      print('2. Change Editor')
       wait()
       print('\n(Type "back" to go to the menu)')
       i = input('> ')
@@ -105,10 +116,8 @@ def configuration():
          configuration()
       elif i in ['change editor','editor','2',2]:
          clear()
-         print('This command is temporarily disabled.')
-         main('')
-         # change_editor()
-      elif i in cmds.menu:
+         change_editor()
+      elif i in (cmds.menu or '0'):
          main()
       else: 
          clear()
@@ -150,13 +159,20 @@ def open_file(file=None):
                   sp_Popen([config.editor, file])
                   main()
             clear()
-            print('That file was not found, please try again or type "home" to go back.')
+            print('That file was not found, please try again. \n(Type "back" to go to the menu)\n')
             continue
 
 def file_read(file):
-   try: file = open(str(projects_folder) + '/' + str(file) + '.txt')
+   try: 
+      file = open(str(projects_folder) + '/' + str(file) + '.txt')
    except FileNotFoundError: 
-      print('That was not recognised as a valid command!')
+      print('That was not recognised as a valid command.')
+      main('')
+   except OSError:
+      print('That command contains an invalid character.')
+      main('')
+   except:
+      print('That was not recognized as a valid command.')
       main('')
    lines = file.readlines()
    print('')
@@ -201,15 +217,42 @@ def new_project():
       main()
 
 def change_editor():
-   print('Supported Editors: ' + 'Wordpad, Notepad, Notepad++, Visual Studio Code')
-   i = input('> ')
-   if i in supported_editors.all_editors:
-      if i in supported_editors.vsc:
-         i = ''
+   while True:
+      print('Supported Editors: ' + 'Wordpad, Notepad, Notepad++, Visual Studio Code')
+      i = input('> ')
+      i = i.lower()
+      settings = config.cxml.tree.find('settings')
+      if i in cmds.menu:
+         main()
+      elif i in supported_editors.win_editors: # It can't enter this for some reason
+         new_editor = i
+         cur_editor = i.capitalize()
+      elif i in supported_editors.vsc:
+         new_editor = 'vscode'
+         cur_editor = 'Visual Studio Code'
       elif i in supported_editors.npp:
-         i = 'Notepad++'
+         new_editor = 'notepad++'
+         cur_editor = 'Notepad++'
       else:
-         pass
+         clear()
+         print('That was not recognised as a valid editor, please try again. ')
+         os_system('pause')
+         clear()
+         continue
+#         log(2, 'Couldn\'t set editor - input: ' + str(i))
+      try: 
+         new = settings.set('editor', new_editor)
+         break
+      except:
+         print('We recieved an error, please try again.')
+         os_system('pause')
+         clear()
+         continue
+   config.cxml.tree.write(config.cxml.data_file, new)
+   clear()
+   print('Set editor to ' + cur_editor)
+   wait()
+   main('')
 
 # Sub Commands
 def clear(p=None):
@@ -225,3 +268,4 @@ def wait():
 
 #-
 os_system('title ASCII Project Manager' + ' - ' + str(app_version))
+main()
